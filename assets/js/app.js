@@ -4,9 +4,9 @@ var svgHeight = 660;
 
 // Define the chart's margins as an object
 var chartMargin = {
-  top: 30,
-  right: 30,
-  bottom: 30,
+  top: 20,
+  right: 40,
+  bottom: 80,
   left: 100
 };
 
@@ -18,8 +18,8 @@ var chartHeight = svgHeight - chartMargin.top - chartMargin.bottom;
 var svg = d3
   .select("#scatter")  
   .append("svg")
-  .attr("height", svgHeight)
-  .attr("width", svgWidth);
+  .attr("width", svgWidth)
+  .attr("height", svgHeight);
 
 // Append a group to the SVG area and shift ('translate') it to the right and down to adhere
 // to the margins set in the "chartMargin" object.
@@ -42,8 +42,11 @@ var chartGroup = svg.append("g")
     
     //age vs obesity
         // Add X axis
+        console.log("max age", d3.max(data, d => d.age));
+        max_age = d3.max(data, d => d.age) + 5;
         var x = d3.scaleLinear()
-        .domain([30, d3.max(data, d => d.age)])
+        //.domain([30, (d3.max(data, d => d.age)] +5))
+        .domain([30,max_age])
         .range([ 0, chartWidth ]);
         svg.append("g")
         .attr("transform", `translate(0, ${chartHeight})`)
@@ -51,7 +54,7 @@ var chartGroup = svg.append("g")
 
         // Add Y axis
         var y = d3.scaleLinear()
-        .domain([0, d3.max(data, d => d.obesity)])
+        .domain([15, (d3.max(data, d => d.obesity)+5)])
         .range([chartHeight, 0]);
         svg.append("g")
         .call(d3.axisLeft(y));
@@ -80,8 +83,8 @@ var chartGroup = svg.append("g")
         //y labels
         chartGroup.append("text")
         .attr("transform", "rotate(-90)")
-        .attr("y", 0 - chartMargin.left - 10)
-        .attr("x", 0 - chartHeight/2)
+        .attr("y", chartMargin.left + 10)
+        .attr("x", chartHeight/2)
         .attr("dy", "1em")
         .attr("class", "aText")
         .text("Obesity");
