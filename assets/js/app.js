@@ -1,22 +1,23 @@
 // Define SVG area dimensions
 var svgWidth = 960;
-var svgHeight = 660;
+var svgHeight = 500;
 
 // Define the chart's margins as an object
-var chartMargin = {
+var margin = {
   top: 20,
   right: 40,
-  bottom: 80,
+  bottom: 60,
   left: 100
 };
 
 // Define dimensions of the chart area
-var chartWidth = svgWidth - chartMargin.left - chartMargin.right;
-var chartHeight = svgHeight - chartMargin.top - chartMargin.bottom;
+var width = svgWidth - margin.left - margin.right;
+var height = svgHeight - margin.top - margin.bottom;
 
 // Select body, append SVG area to it, and set the dimensions
 var svg = d3
-  .select("#scatter")  
+  .select("#scatter") 
+  .classed("chart", true)
   .append("svg")
   .attr("width", svgWidth)
   .attr("height", svgHeight);
@@ -24,7 +25,7 @@ var svg = d3
 // Append a group to the SVG area and shift ('translate') it to the right and down to adhere
 // to the margins set in the "chartMargin" object.
 var chartGroup = svg.append("g")
-  .attr("transform", `translate(${chartMargin.left}, ${chartMargin.top})`);
+  .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
   //load the data from data.csv
   d3.csv("assets/data/data.csv").then(function(data) {
@@ -47,16 +48,18 @@ var chartGroup = svg.append("g")
         var x = d3.scaleLinear()
         //.domain([30, (d3.max(data, d => d.age)] +5))
         .domain([30,max_age])
-        .range([ 0, chartWidth ]);
-        svg.append("g")
-        .attr("transform", `translate(0, ${chartHeight})`)
+        .range([ 0, width ]);
+        chartGroup.append("g")
+        .attr("transform", `translate(0, ${height})`) //here
         .call(d3.axisBottom(x));
 
         // Add Y axis
+        max_obesity = d3.max(data, d => d.obesity)+5;
         var y = d3.scaleLinear()
-        .domain([15, (d3.max(data, d => d.obesity)+5)])
-        .range([chartHeight, 0]);
-        svg.append("g")
+        .domain([15, max_obesity])
+        .range([height, 0]);
+        chartGroup.append("g")
+        //.attr("transform", `translate(${width}, 10)`) //here
         .call(d3.axisLeft(y));
 
         // Add dots
@@ -71,7 +74,7 @@ var chartGroup = svg.append("g")
         .classed("stateCircle", true)
 
         //Add State Abbreviations
-        chartGroup.selectAll("text")
+        chartGroup.selectAll(".text")
         .data(data)
         .enter()
         .append("text")
@@ -83,15 +86,15 @@ var chartGroup = svg.append("g")
         //y labels
         chartGroup.append("text")
         .attr("transform", "rotate(-90)")
-        .attr("y", chartMargin.left + 10)
-        .attr("x", chartHeight/2)
-        .attr("dy", "1em")
+        .attr("y", 0 - margin.left+20)
+        .attr("x", 0 - (height/2))
+        //.attr("dy", "1em")
         .attr("class", "aText")
         .text("Obesity");
 
         // x labels
         chartGroup.append("text")
-        .attr("transform", `translate(${chartWidth / 2}, ${chartHeight + 20})`)
+        .attr("transform", `translate(${width / 2}, ${height + 30})`)
         .attr("class", "aText")
         .text("Age");
     }).catch(function(error){
